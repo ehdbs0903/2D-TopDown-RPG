@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerAction : MonoBehaviour
 {
     public float MoveSpeed;
+    public GameManager manager;
 
     Rigidbody2D rigid;
     Animator anim;
@@ -25,14 +26,14 @@ public class PlayerAction : MonoBehaviour
     void Update()
     {
         //Move Value
-        h = Input.GetAxisRaw("Horizontal");
-        v = Input.GetAxisRaw("Vertical");
+        h = manager.isAction ? 0 : Input.GetAxisRaw("Horizontal");
+        v = manager.isAction ? 0 : Input.GetAxisRaw("Vertical");
 
         //Check Button Down & Up
-        bool hDown = Input.GetButtonDown("Horizontal");
-        bool vDown = Input.GetButtonDown("Vertical");
-        bool hUp = Input.GetButtonUp("Horizontal");
-        bool vUp = Input.GetButtonUp("Vertical");
+        bool hDown = manager.isAction ? false : Input.GetButtonDown("Horizontal");
+        bool vDown = manager.isAction ? false : Input.GetButtonDown("Vertical");
+        bool hUp = manager.isAction ? false : Input.GetButtonUp("Horizontal");
+        bool vUp = manager.isAction ? false : Input.GetButtonUp("Vertical");
 
         //Check Horizontal Move
         if (hDown)
@@ -76,7 +77,9 @@ public class PlayerAction : MonoBehaviour
 
         //Scan Obejct
         if (Input.GetButtonDown("Jump") && scanObject != null)
-            Debug.Log("this is " + scanObject.name);
+        {
+            manager.Action(scanObject);
+        }
     }
     
     void FixedUpdate()
