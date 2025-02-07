@@ -8,9 +8,12 @@ public class GameManager : MonoBehaviour
 {
     public TextMeshProUGUI DialogueBoxText;
     public GameObject DialogueBox;
+    public DialogueManager dialogueManager;
+    public Image PortraitImg;
 
     GameObject scanObject;
     public bool isAction = false;
+    public int dialogueIdx;
 
     void Awake()
     {
@@ -19,17 +22,38 @@ public class GameManager : MonoBehaviour
 
     public void Action(GameObject scanObj)
     {
-        if (isAction)
+        scanObject = scanObj;
+        ObjData objData = scanObj.GetComponent<ObjData>();
+        Talk(objData.id, objData.isNpc);
+
+        DialogueBox.SetActive(isAction);
+    }
+
+    void Talk(int id, bool isNPC)
+    {
+        string dialogueData = dialogueManager.GetDialogue(id, dialogueIdx);
+
+        if (dialogueData == null)
         {
             isAction = false;
+            dialogueIdx = 0;
+            return;
+        }
+
+        if (isNPC)
+        {
+            DialogueBoxText.text = dialogueData.Split(':')[0];
+            PortraitImg.sprite = dialogueManager.GetPortrait(id, int.Parse(dialogueData.Split(':')[1]));
+            PortraitImg.color = new Color(1, 1, 1, 1);
         }
         else
         {
-            isAction = true;
-            scanObject = scanObj;
-            DialogueBoxText.text = "이것의 이름은 " + scanObject.name + "입니다.";
+            DialogueBoxText.text = dialogueData;
+
+            PortraitImg.color = new Color(1, 1, 1, 0);
         }
 
-        DialogueBox.SetActive(isAction);
+        isAction = true;
+        dialogueIdx++;
     }
 }
