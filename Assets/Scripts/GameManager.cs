@@ -10,36 +10,44 @@ public class GameManager : MonoBehaviour
     public GameObject DialogueBox;
     public DialogueManager dialogueManager;
     public Image PortraitImg;
+    public QuestManager questManager;
 
     GameObject scanObject;
     public bool isAction = false;
     public int dialogueIdx;
 
-    void Awake()
+    void Start()
     {
-        
+        Debug.Log(questManager.CheckQuest());
     }
 
     public void Action(GameObject scanObj)
     {
+        // Get Current Object
         scanObject = scanObj;
         ObjData objData = scanObj.GetComponent<ObjData>();
         Talk(objData.id, objData.isNpc);
 
+        // Visible Talk for Action
         DialogueBox.SetActive(isAction);
     }
 
     void Talk(int id, bool isNPC)
     {
-        string dialogueData = dialogueManager.GetDialogue(id, dialogueIdx);
+        // Set Talk Data
+        int questTalkIndex = questManager.GetQuestTalkIndex(id);
+        string dialogueData = dialogueManager.GetDialogue(id + questTalkIndex, dialogueIdx);
 
+        // End Talk
         if (dialogueData == null)
         {
             isAction = false;
             dialogueIdx = 0;
+            Debug.Log(questManager.CheckQuest(id));
             return;
         }
 
+        // Continue Talk
         if (isNPC)
         {
             DialogueBoxText.text = dialogueData.Split(':')[0];
