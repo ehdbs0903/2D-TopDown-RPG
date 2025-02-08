@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class QuestManager : MonoBehaviour
 {
+    public GameObject[] questObject;
     public int questId;
     public int questActionIndex;
-    public GameObject[] questObject;
+
     Dictionary<int, QuestData> questList;
 
     void Awake()

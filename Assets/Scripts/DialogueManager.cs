@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class DialogueManager : MonoBehaviour
 {
+    public Sprite[] portraitArr;
+
     Dictionary<int, string[]> dialogueData;
     Dictionary<int, Sprite> portraitData;
-
-    public Sprite[] portraitArr;
 
     void Awake()
     {

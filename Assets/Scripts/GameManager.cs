@@ -6,15 +6,17 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public TextMeshProUGUI DialogueBoxText;
-    public GameObject DialogueBox;
+    public TypeEffect DialogueBoxText;
+    public Animator DialogueBox;
+    public Animator PortraitAnimator;
     public DialogueManager dialogueManager;
     public Image PortraitImg;
     public QuestManager questManager;
-
-    GameObject scanObject;
     public bool isAction = false;
     public int dialogueIdx;
+
+    GameObject scanObject;
+    Sprite prevPortrait;
 
     void Start()
     {
@@ -29,14 +31,24 @@ public class GameManager : MonoBehaviour
         Talk(objData.id, objData.isNpc);
 
         // Visible Talk for Action
-        DialogueBox.SetActive(isAction);
+        DialogueBox.SetBool("isShow", isAction);
     }
 
     void Talk(int id, bool isNPC)
     {
         // Set Talk Data
-        int questTalkIndex = questManager.GetQuestTalkIndex(id);
-        string dialogueData = dialogueManager.GetDialogue(id + questTalkIndex, dialogueIdx);
+        int questTalkIndex = 0;
+        string dialogueData = "";
+        if (DialogueBoxText.isAnimation)
+        {
+            DialogueBoxText.SetMsg("");
+            return;
+        }
+        else
+        {
+            questTalkIndex = questManager.GetQuestTalkIndex(id);
+            dialogueData = dialogueManager.GetDialogue(id + questTalkIndex, dialogueIdx);
+        }
 
         // End Talk
         if (dialogueData == null)
@@ -50,13 +62,18 @@ public class GameManager : MonoBehaviour
         // Continue Talk
         if (isNPC)
         {
-            DialogueBoxText.text = dialogueData.Split(':')[0];
+            DialogueBoxText.SetMsg(dialogueData.Split(':')[0]);
             PortraitImg.sprite = dialogueManager.GetPortrait(id, int.Parse(dialogueData.Split(':')[1]));
             PortraitImg.color = new Color(1, 1, 1, 1);
+            if (prevPortrait != PortraitImg.sprite)
+            {
+                PortraitAnimator.SetTrigger("doEffect");
+                prevPortrait = PortraitImg.sprite;
+            }
         }
         else
         {
-            DialogueBoxText.text = dialogueData;
+            DialogueBoxText.SetMsg(dialogueData);
 
             PortraitImg.color = new Color(1, 1, 1, 0);
         }
